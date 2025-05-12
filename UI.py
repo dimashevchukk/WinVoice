@@ -26,7 +26,7 @@ class App:
         self.start_button = None
         self.settings_button = None
 
-        self.__update_output()
+        self.__update_output()  # REWORK
         self.__main_menu()
 
     def start(self):
@@ -90,6 +90,7 @@ class App:
         lang_code = "uk" if selected_language == "Українська" else "en"
         self.language.set(lang_code)
         self.command_handler.switch_language(lang_code)
+        self.voice_recognizer.switch_language(lang_code)
         print(f"Language switched to: {lang_code}")
 
     def __update_output(self):

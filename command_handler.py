@@ -1,8 +1,6 @@
 import os
 import difflib
 import pyautogui
-from datetime import datetime
-from pathlib import Path
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
@@ -33,7 +31,7 @@ class CommandHandler:
             "відкрити диспетчер завдань": self.open_task_manager,
             "закрити диспетчер завдань": self.close_task_manager,
 
-            # Window cotrol
+            # Window control
             "згорнути вікно": self.min_window,
             "розкрити вікно": self.expand_window,
             "закрити вікно": self.close_window,
@@ -87,6 +85,9 @@ class CommandHandler:
             "стрілка вправо": self.right,
 
             # Mouse
+            "права кнопка миші": self.click_lmb,
+            "ліва кнопка миші": self.click_rmb,
+            "середня кнопка миші": self.click_mmb,
             "вгору": self.scroll_up,
             "вниз": self.scroll_down,
 
@@ -113,14 +114,11 @@ class CommandHandler:
 
         self.commands = self.commands_ua
 
-    def handle_command(self, command_text):
+    def handle_command(self, command_text: str) -> list[str]:
         command_text = command_text.lower()
         executed_commands = []
 
-        exact_matches = [
-            command for command in self.commands.keys()
-            if command in command_text
-        ]
+        exact_matches = [command for command in self.commands.keys() if command in command_text]
 
         if exact_matches:
             for command in exact_matches:
@@ -134,15 +132,11 @@ class CommandHandler:
 
         return executed_commands if executed_commands else ["No commands recognized"]
 
-    def switch_language(self, lang):
+    def switch_language(self, lang: str) -> None:
         if lang == "uk":
             self.commands = self.commands_ua
         elif lang == "en":
             self.commands = self.commands_eng
-        else:
-            return "Wrong language"
-
-        return f"Language switched to {lang}"
 
     def open_browser(self):
         os.system("start https://")
@@ -350,6 +344,18 @@ class CommandHandler:
     def right(self):
         pyautogui.hotkey("right")
         return "Right arrow pressed"
+
+    def click_lmb(self):
+        pyautogui.leftClick()
+        return "LMB clicked"
+
+    def click_rmb(self):
+        pyautogui.rightClick()
+        return "RMB clicked"
+
+    def click_mmb(self):
+        pyautogui.middleClick()
+        return "MMB clicked"
 
     def scroll_up(self):
         pyautogui.scroll(300)

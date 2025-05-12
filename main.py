@@ -8,6 +8,5 @@ if __name__ == '__main__':
     root = tk.Tk()
     vr = VoiceRecognition()
     ch = CommandHandler()
-
     app = App(root, vr, ch)
     app.start()
