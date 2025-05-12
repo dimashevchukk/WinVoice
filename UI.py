@@ -8,7 +8,7 @@ class App:
         self.command_handler = command_handler
         self.listening = False
 
-        self.language = tk.StringVar(value="uk")
+        self.language = 'uk-UA'
 
         self.root = root
         self.root.title("WinVoice")
@@ -81,14 +81,14 @@ class App:
 
         language_options = ["Українська", "English"]
         self.language_dropdown = ttk.Combobox(language_frame, values=language_options, state="readonly", font=("Arial", 10), width=15)
-        self.language_dropdown.set("Українська" if self.language.get() == "uk" else "English")
+        self.language_dropdown.set("Українська" if self.language == "uk-UA" else "English")
         self.language_dropdown.pack(side=tk.LEFT)
         self.language_dropdown.bind("<<ComboboxSelected>>", self.__apply_language)
     
-    def __apply_language(self):
+    def __apply_language(self, event=None):
         selected_language = self.language_dropdown.get()
-        lang_code = "uk" if selected_language == "Українська" else "en"
-        self.language.set(lang_code)
+        lang_code = "uk-UA" if selected_language == "Українська" else "en-US"
+        self.language = lang_code
         self.command_handler.switch_language(lang_code)
         self.voice_recognizer.switch_language(lang_code)
         print(f"Language switched to: {lang_code}")

@@ -98,7 +98,7 @@ class CommandHandler:
             "заблокувати комп'ютер": self.lock
         }
 
-        self.commands_eng = {
+        self.commands_en = {
             "open browser": self.open_browser,
             "open calculator": self.open_calculator,
             "open notepad": self.open_notepad,
@@ -133,10 +133,7 @@ class CommandHandler:
         return executed_commands if executed_commands else ["No commands recognized"]
 
     def switch_language(self, lang: str) -> None:
-        if lang == "uk":
-            self.commands = self.commands_ua
-        elif lang == "en":
-            self.commands = self.commands_eng
+        self.commands = self.commands_ua if lang == 'uk-UA' else self.commands_en
 
     def open_browser(self):
         os.system("start https://")

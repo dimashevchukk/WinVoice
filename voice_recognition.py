@@ -49,7 +49,4 @@ class VoiceRecognition:
                 print(f"Couldn't request results from Google Speech Recognition service; {e}")
 
     def switch_language(self, language) -> None:
-        if language == "ua":
-            self.language = "uk-UA"
-        elif language == "en":
-            self.language = "en-US"
+        self.language = language
