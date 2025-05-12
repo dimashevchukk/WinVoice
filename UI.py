@@ -26,10 +26,8 @@ class App:
         self.start_button = None
         self.settings_button = None
 
-        self.__update_output()  # REWORK
-        self.__main_menu()
-
     def start(self):
+        self.__main_menu()
         self.root.mainloop()
 
     def __main_menu(self):
@@ -50,6 +48,7 @@ class App:
         self.__toggle_button()
         if not self.listening:
             self.listening = True
+            self.__update_output()
             self.voice_recognizer.listen()
             self.start_button["text"] = "Stop listening"
         else:
@@ -94,6 +93,9 @@ class App:
         print(f"Language switched to: {lang_code}")
 
     def __update_output(self):
+        if not self.listening:
+            return
+
         text = self.voice_recognizer.get_result()
         if text:
             result = self.command_handler.handle_command(text)
