@@ -1,3 +1,4 @@
+import json
 import os
 import difflib
 import pyautogui
@@ -13,7 +14,7 @@ class CommandHandler:
         interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
         self.volume = cast(interface, POINTER(IAudioEndpointVolume))
 
-        self.commands_ua = {
+        self.commands_uk = {
             # Browser
             "відкрити браузер": self.open_browser,
             "оновити сторінку": self.browser_refresh,
@@ -97,7 +98,6 @@ class CommandHandler:
             "сплячий режим": self.sleep,
             "заблокувати комп'ютер": self.lock
         }
-
         self.commands_en = {
             "open browser": self.open_browser,
             "open calculator": self.open_calculator,
@@ -112,7 +112,10 @@ class CommandHandler:
             "increase volume": self.increase_brightness,
         }
 
-        self.commands = self.commands_ua
+        self.language: str = 'en-US'
+        self.volume_step: int = 10
+        self.brightness_step: int = 10
+        self.commands = self.commands_en
 
     def handle_command(self, command_text: str) -> list[str]:
         command_text = command_text.lower()
@@ -132,8 +135,11 @@ class CommandHandler:
 
         return executed_commands if executed_commands else ["No commands recognized"]
 
-    def switch_language(self, lang: str) -> None:
-        self.commands = self.commands_ua if lang == 'uk-UA' else self.commands_en
+    def change_settings(self, settings: dict) -> None:
+        self.language: str = settings['language']
+        self.volume_step: int = settings['volume_step']
+        self.brightness_step: int = settings['brightness_step']
+        self.commands = self.commands_en if self.language == 'en-US' else self.commands_uk
 
     def open_browser(self):
         os.system("start https://")
@@ -254,15 +260,15 @@ class CommandHandler:
         self.volume.SetMute(0, None)
         return "Volume unmuted"
 
-    def increase_volume(self, step=10):
+    def increase_volume(self):
         current = self.volume.GetMasterVolumeLevelScalar() * 100
-        new_volume = min(current + step, 100)
+        new_volume = min(current + self.volume_step, 100)
         self.volume.SetMasterVolumeLevelScalar(new_volume / 100, None)
         return f"Volume increased to {new_volume}%"
 
-    def decrease_volume(self, step=10):
+    def decrease_volume(self):
         current = self.volume.GetMasterVolumeLevelScalar() * 100
-        new_volume = max(current - step, 0)
+        new_volume = max(current - self.volume_step, 0)
         self.volume.SetMasterVolumeLevelScalar(new_volume / 100, None)
         return f"Volume decreased to {new_volume}%"
 
@@ -282,15 +288,15 @@ class CommandHandler:
         sbc.set_brightness(0)
         return "Brightness set to minimum"
 
-    def increase_brightness(self, step=10):
+    def increase_brightness(self):
         current = sbc.get_brightness()[0]
-        new_brightness = min(current + step, 100)
+        new_brightness = min(current + self.brightness_step, 100)
         sbc.set_brightness(new_brightness)
         return f"Brightness increased to {new_brightness}%"
 
-    def decrease_brightness(self, step=10):
+    def decrease_brightness(self):
         current = sbc.get_brightness()[0]
-        new_brightness = max(current - step, 0)
+        new_brightness = max(current - self.brightness_step, 0)
         sbc.set_brightness(new_brightness)
         return f"Brightness decreased to {new_brightness}%"
 

@@ -1,14 +1,17 @@
+import json
+import os
 import tkinter as tk
 from tkinter import ttk
 
 
 class App:
     def __init__(self, root, voice_recognizer, command_handler):
+        self.settings_file = 'settings.json'
+        self.__create_settings_file()
+
         self.voice_recognizer = voice_recognizer
         self.command_handler = command_handler
         self.listening = False
-
-        self.language = 'uk-UA'
 
         self.root = root
         self.root.title("WinVoice")
@@ -41,7 +44,7 @@ class App:
         self.start_button.pack(side="top", pady=50)
 
         self.settings_button = tk.Button(self.main_frame, text="Settings", font=("Arial", 10),
-                                         width=10, height=3, command=self.__settings)
+                                         width=10, height=3, command=self.__settings_window)
         self.settings_button.pack(side="bottom", pady=30)
 
     def __toggle_listening(self):
@@ -63,7 +66,32 @@ class App:
         else:
             self.start_button["state"] = "normal"
 
-    def __settings(self):
+    def __create_settings_file(self) -> None:
+        if not os.path.exists(self.settings_file):
+            with open(self.settings_file, 'w') as f:
+                settings = {
+                    "language": "uk-UA",
+                    "volume_step": 10,
+                    "brightness_step": 10
+                }
+                f.write(json.dumps(settings))
+
+    def __read_settings_file(self) -> dict | None:
+        if os.path.exists(self.settings_file):
+            with open(self.settings_file, 'r') as f:
+                settings = json.load(f)
+                return settings
+
+    def __rewrite_settings_file(self, settings: dict) -> None:
+        with open(self.settings_file, 'w') as f:
+            f.write(json.dumps(settings, ensure_ascii=False))
+
+    def __settings_window(self):
+        settings = self.__read_settings_file()
+        lang_code = settings['language']
+        volume_step = settings['volume_step']
+        brightness_step = settings['brightness_step']
+
         for widget in self.settings_frame.winfo_children():
             widget.destroy()
 
@@ -71,26 +99,42 @@ class App:
         self.settings_frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Button(self.settings_frame, text="Back", font=("Arial", 10), width=7, height=1,
-                  command=self.__main_menu).place(x=10, y=10)
+                  command=self.__save_settings_button).place(x=10, y=10)
 
-        language_frame = tk.Frame(self.settings_frame, bg="#2c3e50")
-        language_frame.pack(pady=50)
+        settings_group = tk.Frame(self.settings_frame, bg="#2c3e50")
+        settings_group.pack(pady=50, padx=20, anchor="w")
 
-        tk.Label(language_frame, text="Language:", bg="#2c3e50", fg="white", font=("Arial", 11)).pack(side=tk.LEFT, padx=10)
-
+        tk.Label(settings_group, text="Language:", bg="#2c3e50", fg="white", font=("Arial", 11)).pack(anchor="w", pady=5)
         language_options = ["Українська", "English"]
-        self.language_dropdown = ttk.Combobox(language_frame, values=language_options, state="readonly", font=("Arial", 10), width=15)
-        self.language_dropdown.set("Українська" if self.language == "uk-UA" else "English")
-        self.language_dropdown.pack(side=tk.LEFT)
-        self.language_dropdown.bind("<<ComboboxSelected>>", self.__apply_language)
-    
-    def __apply_language(self, event=None):
-        selected_language = self.language_dropdown.get()
-        lang_code = "uk-UA" if selected_language == "Українська" else "en-US"
-        self.language = lang_code
-        self.command_handler.switch_language(lang_code)
+        self.language_dropdown = ttk.Combobox(settings_group, values=language_options, state="readonly",
+                                              font=("Arial", 10), width=20)
+        self.language_dropdown.set("English" if lang_code == "en-US" else "Українська")
+        self.language_dropdown.pack(anchor="w")
+
+        tk.Label(settings_group, text="Volume step (1-100):", bg="#2c3e50", fg="white", font=("Arial", 11)).pack(anchor="w", pady=5)
+        self.volume_entry = tk.Entry(settings_group, font=("Arial", 10), width=10)
+        self.volume_entry.insert(0, str(volume_step))
+        self.volume_entry.pack(anchor="w")
+
+        tk.Label(settings_group, text="Brightness step (1-100):", bg="#2c3e50", fg="white", font=("Arial", 11)).pack(anchor="w", pady=5)
+        self.brightness_entry = tk.Entry(settings_group, font=("Arial", 10), width=10)
+        self.brightness_entry.insert(0, str(brightness_step))
+        self.brightness_entry.pack(anchor="w")
+
+    def __save_settings_button(self) -> None:
+        language = self.language_dropdown.get()
+        lang_code = 'en-US' if language == 'English' else 'uk-UA'
+        volume_step = self.volume_entry.get()
+        brightness_step = self.brightness_entry.get()
+        settings = {'language': lang_code,
+                    'volume_step': volume_step,
+                    'brightness_step': brightness_step}
+
+        self.command_handler.change_settings(settings)
         self.voice_recognizer.switch_language(lang_code)
-        print(f"Language switched to: {lang_code}")
+        self.__rewrite_settings_file(settings)
+        self.__main_menu()
+        print('Settings saved')
 
     def __update_output(self):
         if not self.listening:

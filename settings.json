@@ -1,7 +1,1 @@
-{
-    "language": "uk",
-    "screenshot_folder": "C:\\Users\\D\\Pictures\\Screenshots",
-    "browser_path": "chrome",
-    "volume_step": 10,
-    "brightness_step": 10
-}
+{"language": "uk-UA", "volume_step": "-50", "brightness_step": "5"}

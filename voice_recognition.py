@@ -2,7 +2,7 @@ import queue
 import speech_recognition
 
 
-class VoiceRecognition:
+class VoiceRecognizer:
     def __init__(self):
         self.recognizer = speech_recognition.Recognizer()
         self.microphone = speech_recognition.Microphone()
@@ -10,7 +10,7 @@ class VoiceRecognition:
         self.commands = queue.Queue()
         self.stop_listening_func = None
         self.listening = False
-        self.language = "uk-UA"
+        self.language = "en-US"
 
         with self.microphone as source:
             print("Microphone setting up")
