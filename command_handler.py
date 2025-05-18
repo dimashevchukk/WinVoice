@@ -1,4 +1,3 @@
-import json
 import os
 import difflib
 import pyautogui
@@ -6,6 +5,7 @@ from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 import screen_brightness_control as sbc
+from performance_logger import timer
 
 
 class CommandHandler:
@@ -112,11 +112,12 @@ class CommandHandler:
             "increase volume": self.increase_brightness,
         }
 
-        self.language: str = 'en-US'
-        self.volume_step: int = 10
-        self.brightness_step: int = 10
-        self.commands = self.commands_en
+        self.language: str = None
+        self.volume_step: int = None
+        self.brightness_step: int = None
+        self.commands: dict = None
 
+    @timer
     def handle_command(self, command_text: str) -> list[str]:
         command_text = command_text.lower()
         executed_commands = []
@@ -137,8 +138,8 @@ class CommandHandler:
 
     def change_settings(self, settings: dict) -> None:
         self.language: str = settings['language']
-        self.volume_step: int = settings['volume_step']
-        self.brightness_step: int = settings['brightness_step']
+        self.volume_step: int = int(settings['volume_step'])
+        self.brightness_step: int = int(settings['brightness_step'])
         self.commands = self.commands_en if self.language == 'en-US' else self.commands_uk
 
     def open_browser(self):

@@ -1,5 +1,6 @@
 import queue
 import speech_recognition
+from performance_logger import timer
 
 
 class VoiceRecognizer:
@@ -10,7 +11,7 @@ class VoiceRecognizer:
         self.commands = queue.Queue()
         self.stop_listening_func = None
         self.listening = False
-        self.language = "en-US"
+        self.language = None
 
         with self.microphone as source:
             print("Microphone setting up")
@@ -36,6 +37,7 @@ class VoiceRecognizer:
             return self.commands.get()
         return None
 
+    @timer
     def __callback(self, recognizer, audio) -> None:
         if self.listening:
             try:

@@ -1,1 +1,5 @@
-{"language": "uk-UA", "volume_step": "-50", "brightness_step": "5"}
+{
+    "language": "uk-UA",
+    "volume_step": "20",
+    "brightness_step": "20"
+}
