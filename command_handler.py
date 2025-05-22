@@ -10,6 +10,11 @@ from performance_logger import timer
 
 class CommandHandler:
     def __init__(self):
+        self.language: str = None
+        self.volume_step: int = None
+        self.brightness_step: int = None
+        self.commands: dict = None
+
         devices = AudioUtilities.GetSpeakers()
         interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
         self.volume = cast(interface, POINTER(IAudioEndpointVolume))
@@ -99,23 +104,89 @@ class CommandHandler:
             "заблокувати комп'ютер": self.lock
         }
         self.commands_en = {
+            # Browser
             "open browser": self.open_browser,
+            "refresh page": self.browser_refresh,
+            "home page": self.browser_home,
+            "next": self.browser_forward,
+            "previous": self.browser_back,
+
+            # Standard apps
             "open calculator": self.open_calculator,
+            "close calculator": self.close_calculator,
             "open notepad": self.open_notepad,
+            "close notepad": self.close_notepad,
             "open explorer": self.open_explorer,
-            "open task_manager": self.open_task_manager,
-            "close task_manager": self.close_task_manager,
+            "close explorer": self.close_explorer,
+            "open task manager": self.open_task_manager,
+            "close task manager": self.close_task_manager,
+
+            # Window control
+            "minimize window": self.min_window,
+            "expand window": self.expand_window,
+            "close window": self.close_window,
+            "switch window": self.switch_window,
+            "desktop": self.desktop,
+
+            # Application
             "stop listening": self.stop_listening,
             "close application": self.close_application,
+
+            # Screenshots
+            "screenshot": self.take_screenshot,
+            "window screenshot": self.take_screenshot_window,
+
+            # CTRL C/V, clipboard
+            "copy": self.copy,
+            "paste": self.paste,
+            "clipboard": self.clipboard,
+
+            # Media
+            "pause": self.pause,
+            "next track": self.next_track,
+            "previous track": self.prev_track,
+
+            # Volume
             "mute volume": self.mute_volume,
             "unmute volume": self.unmute_volume,
-            "increase volume": self.increase_brightness,
-        }
+            "increase volume": self.increase_volume,
+            "decrease volume": self.decrease_volume,
+            "maximum volume": self.max_volume,
+            "minimum volume": self.min_volume,
 
-        self.language: str = None
-        self.volume_step: int = None
-        self.brightness_step: int = None
-        self.commands: dict = None
+            # Brightness
+            "maximum brightness": self.max_brightness,
+            "minimum brightness": self.min_brightness,
+            "increase brightness": self.increase_brightness,
+            "decrease brightness": self.decrease_brightness,
+
+            # Keyboard
+            "escape": self.esc,
+            "enter": self.enter,
+            "capslock": self.capslock,
+            "delete": self.delete,
+            "backspace": self.backspace,
+            "cut": self.cut,
+            "undo": self.undo,
+            "redo": self.redo,
+            "up": self.up,
+            "down": self.down,
+            "left": self.left,
+            "right": self.right,
+
+            # Mouse
+            "left mouse button": self.click_lmb,
+            "right mouse button": self.click_rmb,
+            "middle mouse button": self.click_mmb,
+            "scroll up": self.scroll_up,
+            "scroll down": self.scroll_down,
+
+            # Power
+            "shutdown": self.shutdown,
+            "restart": self.restart,
+            "sleep": self.sleep,
+            "lock": self.lock
+        }
 
     @timer
     def handle_command(self, command_text: str) -> list[str]:
@@ -191,7 +262,6 @@ class CommandHandler:
         return "Task Manager opened"
 
     def close_task_manager(self):
-        # os.system("taskkill /IM taskmgr.exe /F") # works only with admin rights
         os.system("wmic process where name='Taskmgr.exe' call terminate")
         return "Task Manager closed"
 
@@ -212,7 +282,7 @@ class CommandHandler:
         return "Window switched"
 
     def desktop(self):
-        pyautogui.hotkey("win", "d")
+        pyautogui.hotkey('win', 'd')
         return "Desktop showed"
 
     def stop_listening(self):

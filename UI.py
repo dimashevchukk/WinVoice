@@ -15,8 +15,9 @@ class App:
         self.translations = self.load_translation(self.settings['language'])
 
         self.voice_recognizer = voice_recognizer
-        self.command_handler = command_handler
         self.voice_recognizer.switch_language(self.settings['language'])
+
+        self.command_handler = command_handler
         self.command_handler.change_settings(self.settings)
 
         self.listening = False
