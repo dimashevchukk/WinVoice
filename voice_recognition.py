@@ -10,8 +10,8 @@ class VoiceRecognizer:
 
         self.commands = queue.Queue()
         self.stop_listening_func = None
-        self.listening = False
-        self.language = None
+        self.listening: bool = False
+        self.language: str = None
 
         with self.microphone as source:
             print("Microphone setting up")

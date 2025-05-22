@@ -208,9 +208,9 @@ class CommandHandler:
         return executed_commands if executed_commands else ["No commands recognized"]
 
     def change_settings(self, settings: dict) -> None:
-        self.language: str = settings['language']
-        self.volume_step: int = int(settings['volume_step'])
-        self.brightness_step: int = int(settings['brightness_step'])
+        self.language = settings['language']
+        self.volume_step = int(settings['volume_step'])
+        self.brightness_step = int(settings['brightness_step'])
         self.commands = self.commands_en if self.language == 'en-US' else self.commands_uk
 
     def open_browser(self):

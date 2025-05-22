@@ -8,11 +8,11 @@ class App:
     def __init__(self, root, voice_recognizer, command_handler):
         self.settings_file = 'settings.json'
         self.__create_settings_file()
-        self.settings = self.__read_settings_file()
+        self.settings: dict = self.__read_settings_file()
 
         self.translation_dir = 'translations'
         self.__create_translation_files()
-        self.translations = self.load_translation(self.settings['language'])
+        self.translations: dict = self.load_translation(self.settings['language'])
 
         self.voice_recognizer = voice_recognizer
         self.voice_recognizer.switch_language(self.settings['language'])
@@ -38,11 +38,11 @@ class App:
         self.start_button = None
         self.settings_button = None
 
-    def start(self):
+    def start(self) -> None:
         self.__main_menu()
         self.root.mainloop()
 
-    def __main_menu(self):
+    def __main_menu(self) -> None:
         self.settings_frame.pack_forget()
         self.main_frame.pack(fill=tk.BOTH, expand=True)
         for widget in self.main_frame.winfo_children():
@@ -58,7 +58,7 @@ class App:
 
         print('Main window opened')
 
-    def __toggle_listening(self):
+    def __toggle_listening(self) -> None:
         self.__toggle_button()
         if not self.listening:
             self.listening = True
@@ -70,7 +70,7 @@ class App:
             self.voice_recognizer.stop_listening()
             self.start_button["text"] = self.translations['start_listening']
 
-    def __toggle_button(self):
+    def __toggle_button(self) -> None:
         if self.start_button["state"] == "normal":
             self.start_button["state"] = "disabled"
             self.root.after(2000, self.__toggle_button)
@@ -137,10 +137,11 @@ class App:
             f.write(json.dumps(settings, ensure_ascii=False, indent=4))
         print('Settings file rewritten')
 
-    def __settings_window(self):
+    def __settings_window(self) -> None:
         if self.listening:
             self.__toggle_listening()
 
+        self.settings = self.__read_settings_file()
         lang_code = self.settings['language']
         volume_step = self.settings['volume_step']
         brightness_step = self.settings['brightness_step']
@@ -191,7 +192,7 @@ class App:
         self.__main_menu()
         print('Settings saved')
 
-    def __update_output(self):
+    def __update_output(self) -> None:
         if not self.listening:
             return
 
@@ -207,7 +208,7 @@ class App:
 
         self.root.after(500, self.__update_output)
 
-    def __on_close(self):
+    def __on_close(self) -> None:
         self.listening = False
         self.voice_recognizer.stop_listening()
         self.root.destroy()
