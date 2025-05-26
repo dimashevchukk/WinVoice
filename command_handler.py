@@ -42,7 +42,7 @@ class CommandHandler:
             "розкрити вікно": self.expand_window,
             "закрити вікно": self.close_window,
             "перемкнути вікно": self.switch_window,
-            "робочий стіл": self.desktop,  # problem
+            "робочий стіл": self.desktop,
 
             # Application
             "зупинити прослуховування": self.stop_listening,
